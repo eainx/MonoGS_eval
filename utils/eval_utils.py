@@ -123,14 +123,17 @@ def eval_rendering(
     kf_indices,
     iteration="final",
 ):
-    interval = 5
+    # interval = 5
+    interval = 1
     img_pred, img_gt, saved_frame_idx = [], [], []
     end_idx = len(frames) - 1 if iteration == "final" or "before_opt" else iteration
     psnr_array, ssim_array, lpips_array = [], [], []
     cal_lpips = LearnedPerceptualImagePatchSimilarity(
         net_type="alex", normalize=True
     ).to("cuda")
-    for idx in range(0, end_idx, interval):
+    for idx in range(0, end_idx + 1, interval):
+        if idx == end_idx:
+            print(f"Render Eval for {idx + 1} frames")
         if idx in kf_indices:
             continue
         saved_frame_idx.append(idx)

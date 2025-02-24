@@ -11,7 +11,7 @@ from utils.logging_utils import Log
 from utils.multiprocessing_utils import clone_obj
 from utils.pose_utils import update_pose
 from utils.slam_utils import get_loss_mapping
-
+import wandb
 
 class BackEnd(mp.Process):
     def __init__(self, config):
@@ -37,6 +37,10 @@ class BackEnd(mp.Process):
         self.current_window = []
         self.initialized = not self.monocular
         self.keyframe_optimizers = None
+
+        # add for evaluation before/after post processing
+        self.iterations_bf = [0] * 2000
+        self.iterations_af = [0] * 2000
 
     def set_hyperparams(self):
         self.save_results = self.config["Results"]["save_results"]
@@ -84,6 +88,8 @@ class BackEnd(mp.Process):
             self.backend_queue.get()
 
     def initialize_map(self, cur_frame_idx, viewpoint):
+        self.iterations_bf[cur_frame_idx] += self.init_itr_num
+
         for mapping_iteration in range(self.init_itr_num):
             self.iteration_count += 1
             render_pkg = render(
@@ -145,6 +151,7 @@ class BackEnd(mp.Process):
 
         viewpoint_stack = [self.viewpoints[kf_idx] for kf_idx in current_window]
         random_viewpoint_stack = []
+        random_viewpoint_stack_idx = []
         frames_to_optimize = self.config["Training"]["pose_window"]
 
         current_window_set = set(current_window)
@@ -152,6 +159,7 @@ class BackEnd(mp.Process):
             if cam_idx in current_window_set:
                 continue
             random_viewpoint_stack.append(viewpoint)
+            random_viewpoint_stack_idx.append(cam_idx)
 
         for _ in range(iters):
             self.iteration_count += 1
@@ -166,6 +174,8 @@ class BackEnd(mp.Process):
             keyframes_opt = []
 
             for cam_idx in range(len(current_window)):
+                self.iterations_bf[current_window[cam_idx]] += 1
+
                 viewpoint = viewpoint_stack[cam_idx]
                 keyframes_opt.append(viewpoint)
                 render_pkg = render(
@@ -198,6 +208,8 @@ class BackEnd(mp.Process):
                 n_touched_acm.append(n_touched)
 
             for cam_idx in torch.randperm(len(random_viewpoint_stack))[:2]:
+                self.iterations_bf[random_viewpoint_stack_idx[cam_idx]] += 1
+
                 viewpoint = random_viewpoint_stack[cam_idx]
                 render_pkg = render(
                     viewpoint, self.gaussians, self.pipeline_params, self.background
@@ -320,12 +332,17 @@ class BackEnd(mp.Process):
     def color_refinement(self):
         Log("Starting color refinement")
 
+        for i in range(len(self.iterations_bf)):
+            self.iterations_af[i] = self.iterations_bf[i]
+
         iteration_total = 26000
         for iteration in tqdm(range(1, iteration_total + 1)):
             viewpoint_idx_stack = list(self.viewpoints.keys())
             viewpoint_cam_idx = viewpoint_idx_stack.pop(
                 random.randint(0, len(viewpoint_idx_stack) - 1)
             )
+            self.iterations_af[viewpoint_cam_idx] += 1
+
             viewpoint_cam = self.viewpoints[viewpoint_cam_idx]
             render_pkg = render(
                 viewpoint_cam, self.gaussians, self.pipeline_params, self.background
@@ -384,6 +401,16 @@ class BackEnd(mp.Process):
             else:
                 data = self.backend_queue.get()
                 if data[0] == "stop":
+                    Log("Before Post Processing:")
+                    for idx, iters in enumerate(self.iterations_bf):
+                        if iters > 0:
+                            Log(f"Frame Index: {idx}, Iterations: {iters}", tag="Eval")
+                            wandb.log({"Before Processing Frame Index": idx, "Iterations": iters})
+                    Log("\nAfter Post Processing:")
+                    for idx, iters in enumerate(self.iterations_af):
+                        if iters > 0:
+                            Log(f"Frame Index: {idx}, Iterations: {iters}", tag="Eval")
+                            wandb.log({"After Processing Frame Index": idx, "Iterations": iters})
                     break
                 elif data[0] == "pause":
                     self.pause = True

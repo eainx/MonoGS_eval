@@ -151,6 +151,8 @@ class SLAM:
                 FPS,
             )
 
+            save_gaussians(self.gaussians, self.save_dir, "before_opt", final=False)
+
             # re-used the frontend queue to retrive the gaussians from the backend.
             while not frontend_queue.empty():
                 frontend_queue.get()

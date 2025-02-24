@@ -1,4 +1,4 @@
 inherit_from: "configs/rgbd/replica/base_config.yaml"
 Dataset:
-  dataset_path: "datasets/replica/room1/"
+  dataset_path: "/media/eainx/2b2b0b48-d904-4abc-a9ce-60f34c87d9f2/Replica/room1"
   single_thread: False

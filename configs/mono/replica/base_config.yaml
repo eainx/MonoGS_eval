@@ -8,12 +8,12 @@ Results:
   use_wandb: False
 
 Dataset:
-  sensor_type: 'depth'
+  type: 'replica'
+  sensor_type: 'monocular'
   pcd_downsample: 64
   pcd_downsample_init: 32
   adaptive_pointsize: True
   point_size: 0.05
-  type: 'replica'
   Calibration:
     fx: 600.0
     fy: 600.0
@@ -28,7 +28,6 @@ Dataset:
     height: 680
     depth_scale: 6553.5
     distorted: False
-
 
 Training:
   init_itr_num: 1050
@@ -60,7 +59,6 @@ Training:
     cam_rot_delta: 0.003
     cam_trans_delta: 0.001
 
-
 opt_params:
   iterations: 30000
   position_lr_init: 0.00016
@@ -86,7 +84,7 @@ model_params:
   resolution: -1
   white_background: False
   data_device: "cuda"
-  
+
 pipeline_params:
   convert_SHs_python: False
   compute_cov3D_python: False
