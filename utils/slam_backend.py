@@ -405,12 +405,13 @@ class BackEnd(mp.Process):
                     for idx, iters in enumerate(self.iterations_bf):
                         if iters > 0:
                             Log(f"Frame Index: {idx}, Iterations: {iters}", tag="Eval")
-                            wandb.log({"Before Processing Frame Index": idx, "Iterations": iters})
+                    Log(f"Sum: {sum(self.iterations_bf)}")
                     Log("\nAfter Post Processing:")
                     for idx, iters in enumerate(self.iterations_af):
                         if iters > 0:
                             Log(f"Frame Index: {idx}, Iterations: {iters}", tag="Eval")
-                            wandb.log({"After Processing Frame Index": idx, "Iterations": iters})
+                    Log(f"Sum: {sum(self.iterations_af)}")
+
                     break
                 elif data[0] == "pause":
                     self.pause = True

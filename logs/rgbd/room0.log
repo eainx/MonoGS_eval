@@ -1,0 +1,36 @@
+MonoGS: Running MonoGS in Evaluation Mode
+MonoGS: Following config will be overriden
+MonoGS:         save_results=True
+MonoGS:         use_gui=False
+MonoGS:         eval_rendering=True
+MonoGS:         use_wandb=True
+MonoGS: saving results in results/2b2b0b48-d904-4abc-a9ce-60f34c87d9f2_Replica/2025-02-24-22-12-04
+wandb: Using wandb-core as the SDK backend.  Please refer to https://wandb.me/wandb-core for more information.
+wandb: Currently logged in as: eainx (eainx-korea-university). Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.18.6
+wandb: Run data is saved locally in /home/eainx/workspace/MonoGS/wandb/run-20250224_221205-4h0svuib
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run configs/rgbd/replica/room0_2025-02-24-22-12-04
+wandb: ⭐️ View project at https://wandb.ai/eainx-korea-university/MonoGS
+wandb: 🚀 View run at https://wandb.ai/eainx-korea-university/MonoGS/runs/4h0svuib
+MonoGS: Resetting the system
+MonoGS: Initialized map
+MonoGS: Resetting the opacity of non-visible Gaussians
+MonoGS: Evaluating ATE at frame:  122
+Eval: RMSE ATE [m] 0.0011588398275606334
+MonoGS: Evaluating ATE at frame:  254
+Eval: RMSE ATE [m] 0.0009012378334786857
+MonoGS: Evaluating ATE at frame:  371
+Eval: RMSE ATE [m] 0.0009310193546588304
+MonoGS: Resetting the opacity of non-visible Gaussians
+MonoGS: Evaluating ATE at frame:  480
+Eval: RMSE ATE [m] 0.001056495152332426
+[W224 22:22:05.270421216 CudaIPCTypes.cpp:96] Producer process tried to deallocate over 1000 memory blocks referred by consumer processes. Deallocation might be significantly slowed down. We assume it will never going to be the case, but if it is, please file but to https://github.com/pytorch/pytorch
+MonoGS: Evaluating ATE at frame:  572
+Eval: RMSE ATE [m] 0.0023656779573471387
+MonoGS: Resetting the opacity of non-visible Gaussians
+MonoGS: Evaluating ATE at frame:  676
+Eval: RMSE ATE [m] 0.003429469734713074
+MonoGS: Resetting the opacity of non-visible Gaussians
+MonoGS: Evaluating ATE at frame:  780
+Eval: RMSE ATE [m] 0.004224102323398846
